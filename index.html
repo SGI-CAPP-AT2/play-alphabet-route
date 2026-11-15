@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Alphabet route</title>
+    <!-- YouTube Playables Web SDK -->
+    <script src="https://www.youtube.com/game_api/v1"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/theme.css" />
+  </head>
+  <body>
+    <div id="level-drawer">
+      <div id="level-tray" aria-label="Unlocked levels" inert>
+        <div id="level-list"></div>
+      </div>
+      <button
+        id="level-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="level-tray"
+      >
+        <img class="topbar-logo" src="assets/shgi.svg" alt="" aria-hidden="true" />
+        <span class="level-toggle-title">Alphabet route</span>
+        <span id="current-level"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </button>
+    </div>
+    <div class="app">
+      <div id="hud">
+        <div id="chips">
+          <div class="chip c1"><b id="sc">0</b><span>Score</span></div>
+          <div class="chip c2"><b id="mv">0</b><span>Moves</span></div>
+          <div class="chip c3"><b id="pm">0.00</b><span>Per move</span></div>
+          <div class="chip c4"><b id="timer">00:00</b><span>Time</span></div>
+        </div>
+        <div id="prompt"></div>
+        <div
+          id="progress"
+          role="progressbar"
+          aria-label="Letters collected"
+          aria-valuemin="0"
+          aria-valuemax="0"
+          aria-valuenow="0"
+        >
+          <div class="progress-heading">
+            <span>Progress</span>
+            <span id="progress-count">0 / 0</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div id="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+      <div id="stage">
+        <div id="frame">
+          <div id="board" role="group" aria-label="Board">
+            <svg id="route" viewBox="0 0 400 500" aria-hidden="true"></svg>
+            <div id="fx"></div>
+          </div>
+        </div>
+        <div id="toast" role="status" hidden></div>
+      </div>
+      <div id="bar">
+        <button class="btn bl" id="undo" aria-label="Undo" title="Undo">
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 14 4 9l5-5" />
+            <path d="M4 9h9a7 7 0 0 1 0 14h-2" />
+          </svg>
+          <span class="btn-label">Undo</span>
+        </button>
+        <button class="btn or" id="reset" aria-label="Reset" title="Reset">
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 7v5h-5" />
+            <path d="M19 12a8 8 0 1 1-2.3-5.7L20 9" />
+          </svg>
+          <span class="btn-label">Reset</span>
+        </button>
+        <button
+          class="btn gr"
+          id="show"
+          aria-label="Show best found route"
+          aria-pressed="false"
+          title="Best found [Ad]"
+        >
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <span class="btn-label">Best found [Ad]</span>
+        </button>
+        <button class="btn pu" id="snd" aria-label="Sound on" title="Sound on">
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+            <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+          </svg>
+          <span class="btn-label">Sound on</span>
+        </button>
+        <button
+          class="btn bl"
+          id="help"
+          aria-label="How to play"
+          title="How to play"
+        >
+          <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.6 9a2.5 2.5 0 1 1 4.2 1.8c-1.2 1-1.8 1.3-1.8 3" />
+            <path d="M12 17.5h.01" />
+          </svg>
+          <span class="btn-label">How to play</span>
+        </button>
+      </div>
+    </div>
+    <div id="tutorial" hidden>
+      <div
+        class="panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tutorial-title"
+      >
+        <h2 id="tutorial-title">How to play</h2>
+        <ol>
+          <li>Choose a letter tile to start your route.</li>
+          <li>Slide across neighboring tiles, or tap them one at a time.</li>
+          <li>
+            Visit every letter in alphabetical order. The order is checked when
+            you finish, so start with A.
+          </li>
+          <li>
+            Coins add 1 point, stars add 2 points, and rings subtract 1 point.
+            Undo or reset your route anytime.
+          </li>
+        </ol>
+        <div class="acts">
+          <button class="btn gr" id="start">Start playing</button>
+        </div>
+      </div>
+    </div>
+    <div id="win" hidden>
+      <div class="panel" role="dialog" aria-label="Route complete">
+        <h2>Route complete!</h2>
+        <div id="stars"></div>
+        <div id="wr">0.00</div>
+        <p id="wp"></p>
+        <div class="acts">
+          <button class="btn gr" id="again">Play again</button
+          ><button class="btn bl" id="next">Next level</button>
+        </div>
+      </div>
+    </div>
+    <div id="fail" hidden>
+      <div class="panel" role="dialog" aria-label="Route failed">
+        <h2>Route failed!</h2>
+        <p>Letters must be visited in alphabetical order.</p>
+        <div class="acts">
+          <button class="btn gr" id="retry">Try again</button>
+        </div>
+      </div>
+    </div>
+    <div id="loading-screen" aria-live="polite" aria-label="Loading Alphabet route">
+      <div class="loading-content">
+        <div class="loading-logo-wrap">
+          <img class="loading-logo" src="assets/shgi.svg" alt="Alphabet Route Logo" />
+        </div>
+        <h1 class="loading-title">Alphabet route</h1>
+        <div class="loading-bar-wrap" aria-hidden="true">
+          <div id="loading-bar-fill" class="loading-bar-fill"></div>
+        </div>
+        <p class="loading-status">Loading...</p>
+      </div>
+    </div>
+    <script type="module" src="scripts/game.js"></script>
+  </body>
+</html>
